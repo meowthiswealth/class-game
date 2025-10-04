@@ -76,13 +76,16 @@
 /* Game specific visuals */
 .game-root { min-height:100vh }
 
-/* Spinner animation */
+/* Spinner animation: keep keyframes available but don't force animation here.
+   The component uses inline transform + CSS transition for predictable control. */
 @keyframes spin-slow {
   from { transform: rotate(0deg) }
   to { transform: rotate(1turn) }
 }
 
-.spinner.spinning { animation: spin-slow 3s cubic-bezier(.12,.7,.15,.99) both; transform: rotate(var(--spin-deg)) }
+/* The `.spinner` element relies on a transition on transform. Avoid setting `animation` globally
+   so the component's inline `transform` and `transition` take effect without conflict. */
+.spinner { transition: transform 3s cubic-bezier(.12,.7,.15,.99); }
 
 /* Make buttons and elements vibrant */
 button { font-family: inherit }
