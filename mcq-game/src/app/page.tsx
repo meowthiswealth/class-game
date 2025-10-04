@@ -1,11 +1,10 @@
 "use client";
-import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
-import Spinner from '../components/Spinner';
-import QuestionCard from '../components/QuestionCard';
-import ScoreBadge from '../components/ScoreBadge';
-import ThemeToggle from '../components/ThemeToggle';
-import { QUESTIONS, Question } from '../game/questions';
+import { useEffect, useState } from "react";
+import Spinner from "../components/Spinner";
+import QuestionCard from "../components/QuestionCard";
+import ScoreBadge from "../components/ScoreBadge";
+import { ModeToggle } from "../components/theme-switcher";
+import { QUESTIONS, Question } from "../game/questions";
 
 export default function Home() {
   const [score, setScore] = useState(0);
@@ -21,14 +20,11 @@ export default function Home() {
   };
 
   const onSpin = (sector: number) => {
-    // when the spinner reports a selected sector, pick a question deterministically from it
     setSpinning(true);
     setDisabled(true);
     setSelected(null);
     setLastCorrect(null);
-    // Map sector to a question index
     const qIndex = sector % QUESTIONS.length;
-    // small delay to sync with spinner animation
     setTimeout(() => {
       setCurrent(QUESTIONS[qIndex]);
       setSpinning(false);
@@ -43,24 +39,22 @@ export default function Home() {
     const correct = current.answer === i;
     setLastCorrect(current.answer);
     if (correct) setScore((s) => s + 1);
-    // show feedback then allow spin again
     setTimeout(() => setDisabled(false), 1200);
   };
 
   useEffect(() => {
-    // show an initial question
     setCurrent(pickRandom());
   }, []);
 
   return (
-    <div className="game-root min-h-screen p-6 sm:p-12 flex flex-col items-center bg-gradient-to-b from-[#fff7f0] via-[#f7fbff] to-[#f0fff7]">
-      <ScoreBadge score={score} />
+    <div className="game-root min-h-screen p-6 sm:p-12 flex flex-col items-center bg-gradient-to-b from-white to-gray-100 dark:from-slate-800 dark:to-slate-900">
       <header className="w-full max-w-4xl flex items-center justify-between mb-6">
         <div className="branding flex items-center gap-3">
-          <h1 className="text-2xl font-extrabold text-[#05204A]">MCQ Spin!</h1>
+          <h1 className="text-2xl font-extrabold text-primary">MCQ Spin!</h1>
         </div>
-        <div className="controls hidden sm:flex gap-3 items-center">
-          <ThemeToggle />
+        <div className="controls flex gap-3 items-center">
+          <ScoreBadge score={score} />
+          <ModeToggle />
         </div>
       </header>
 
@@ -78,16 +72,16 @@ export default function Home() {
               correctIndex={selected !== null ? lastCorrect : null}
             />
           ) : (
-            <div className="placeholder">Click the wheel to spin and get a question!</div>
+            <div className="bg-card p-6 rounded-lg shadow-md">
+              Click the wheel to spin and get a question!
+            </div>
           )}
         </div>
       </main>
 
-      <footer className="mt-8 text-sm text-[#334155] opacity-90">Click the wheel to spin — get points for correct answers!</footer>
-
-      <style jsx>{`
-        .placeholder{ padding:18px 24px; background:#fff; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.06) }
-      `}</style>
+      <footer className="mt-8 text-sm text-muted-foreground opacity-90">
+        Click the wheel to spin — get points for correct answers!
+      </footer>
     </div>
   );
 }
